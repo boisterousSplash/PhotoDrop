@@ -39,7 +39,7 @@ module.exports = {
             .then(function(foundUser) {
               if (foundUser) {
                 var token = jwt.sign({ username: username, userId: user._id }, 'FRANKJOEVANMAX');
-                res.json({ userId: user._id, token: token });
+                res.json({ userId: user._id, username: user.username, token: token });
               } else {
                 return next(new Error('Incorrect password'));
               }
@@ -227,12 +227,10 @@ module.exports = {
   },
 
   fetchFriends: function (req, res, next) {
-    console.log('passed username:', req.params.username);
     User.find({ friends: { $elemMatch: { username: req.params.username } } }, (err, friends) => {
       if (err) {
         return next(err);
       }
-      console.log('friends (should be an array of objects):', friends);
       if (friends) {
         res.json(friends);
       } else {
@@ -251,13 +249,10 @@ module.exports = {
   },
 
   requestFriend: function (req, res, next) {
-    console.log('friend request body: ', req.body);
     User.findOne({_id: mongoose.mongo.ObjectID(req.body.currentUserId)}, {username: 1, _id: 1}, function (err, currentUser) {
       if (err) {
         return next(err);
       }
-      console.log('requesting user: ', currentUser.username);
-      console.log('target user: ', req.body.targetUsername);
       User.update({username: req.body.targetUsername}, {$addToSet: {friendRequests: currentUser}}, function (err, targetUser) {
         if (err) {
           return next(err);
