@@ -2,14 +2,6 @@
 var host = '159.203.240.124'; // production server
 // var host = '127.0.0.1'; // local dev testing server
 
-var mockGroupData = [
-  {groupname: 'shane mcgrain', users: [,,,,,,,,,,,,,,]},
-  {groupname: 'tigers sclub', users: [,,,,,,,,]},
-  {groupname: 'katterbox lobby', users: [,,,,,,,,,,,,,,,,,,]},
-];
-
-
-
 var api = {
   login(username, password) {
     var user = { username: username, password: password };
@@ -89,7 +81,7 @@ var api = {
     }).catch(function(err) { console.log(err); });
   },
 
-  uploadPhoto(data, latitude, longitude, userId, callback) {
+  uploadPhoto(data, latitude, longitude, userId, taggedGroups, callback) {
     var url = 'http://' + host + ':8000/imgUpload';
     // cut data in half
     var firstHalf = data.slice(0, Math.floor(data.length / 2));
@@ -104,7 +96,8 @@ var api = {
         data: firstHalf,
         latitude: latitude,
         longitude: longitude,
-        userId: userId
+        userId: userId,
+        taggedGroups: taggedGroups
       })
     }).then(function() {
       fetch(url, {
@@ -117,7 +110,8 @@ var api = {
           data: secondHalf,
           latitude: latitude,
           longitude: longitude,
-          userId: userId
+          userId: userId,
+          taggedGroups: taggedGroups
         })
       }).then(function(res) {
         callback(res._bodyText);
@@ -200,8 +194,24 @@ var api = {
     });
   },
 
-  fetchFriendsPhotos(userId, callback) {
-    var url = 'http://' + host + ':8000/fetchFriendsPhotos?userId=' + userId;
+  fetchUserPhotosNearby(latitude, longitude, radius, userId, callback) {
+    console.log('fetchUserPhotosNearby');
+    var url = 'http://' + host + ':8000/fetchUserPhotosNearby?lat=' + latitude + '&lon=' + longitude + '&radius=' + radius + '&userId=' + userId;
+    return fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(function(photos) {
+      callback(photos._bodyInit);
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
+  },
+
+  fetchFriendsPhotos(latitude, longitude, radius, userId, callback) {
+    var url = 'http://' + host + ':8000/fetchFriendsPhotos?lat=' + latitude + '&lon=' + longitude + '&radius=' + radius +'&userId=' + userId;
     return fetch(url, {
       method: 'GET',
       headers: {

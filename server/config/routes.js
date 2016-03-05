@@ -8,7 +8,9 @@ module.exports = function(app, express) {
   // upload photo to imgur and store link in database
   app.post('/imgUpload',
     photoController.uploadPhoto,
-    photoController.savePhotoModelToDB);
+    photoController.savePhotoModelToDB,
+    groupController.addPhotoToGroups
+  );
 
   // Fetching photos for the map view and user photos
   app.get('/fetchPhotos/', photoController.fetchPhotos);
@@ -17,6 +19,7 @@ module.exports = function(app, express) {
   app.get('/fetchUserLocations/', photoController.fetchUserLocations);
   app.get('/fetchFriendsLocations/', photoController.fetchFriendsLocations);
   app.get('/fetchUserPhotos/', photoController.fetchUserPhotos);
+  app.get('/fetchUserPhotosNearby/', photoController.fetchUserPhotosNearby);
   app.get('/fetchUserFavorites/', userController.fetchFavorites);
 
   // Increment views count on photo and add to Favorites

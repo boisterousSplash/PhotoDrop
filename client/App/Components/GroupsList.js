@@ -47,7 +47,8 @@ class GroupsList extends React.Component {
     this.props.navigator.push({
       component: AddGroups,
       username: this.props.route.username,
-      userId: this.props.route.userId
+      userId: this.props.route.userId,
+      usersGroups: this.state.usersGroups
     });
   }
 
@@ -55,13 +56,21 @@ class GroupsList extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.rightContainer}>
-          <Text style={styles.group}>{group.groupname}</Text>
+          <Text style={styles.group} onPress={()=>{
+            if (this.props.route.addGroupFilter) {
+              this.props.route.addGroupFilter(group, this.props.navigator)
+            }
+          }}>{group.groupname}</Text>
         </View>
         <View style={styles.rightContainer}>
           <Text style={styles.number}>{group.members.length + ' Users'}</Text>
         </View>
       </View>
     );
+  }
+
+  componentWillUpdate() {
+    this.loadGroupsData();
   }
 
   componentDidMount() {
@@ -74,14 +83,18 @@ class GroupsList extends React.Component {
       data.forEach((group, index) => {
         group.groupname = group.groupname;
       });
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(data),
-        loaded: true,
-      });
+      if (this.state.dataSource._cachedRowCount === undefined || this.state.dataSource._cachedRowCount !== data.length) {
+        this.setState({
+          usersGroups: data.map(data => data.groupname),
+          dataSource: this.state.dataSource.cloneWithRows(data),
+          loaded: true,
+        });
+      }
     });
   }
 
   render() {
+    this.loadGroupsData();
     var showErr = (
       this.state.error ? <Text style={styles.err}> {this.state.error} </Text> : <View></View>
     );
@@ -106,7 +119,7 @@ class GroupsList extends React.Component {
 
         <ListView
           dataSource={this.state.dataSource}
-          renderRow={this.renderGroup}
+          renderRow={this.renderGroup.bind(this)}
           style={styles.listView}
         />
 
