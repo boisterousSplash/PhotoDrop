@@ -91,7 +91,7 @@ class CameraView extends React.Component {
           aspect={Camera.constants.Aspect.Fill}
           type={this.state.cameraType}
           flashMode={this.state.cameraFlashToggle}
-          defaultOnFocusComponent={ true } 
+          defaultOnFocusComponent={ true }
           onFocusChanged={ this.state.handleFocusChanged }>
 
           <View style={styles.topButtonContainer}>
@@ -137,7 +137,7 @@ var styles = StyleSheet.create({
   topButtonContainer: {
     flexDirection:'row',
     alignItems:'flex-start',
-    marginTop: 30
+    marginTop: 25
   },
   switchButton: {
     width: 50,
@@ -148,7 +148,7 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: '#ededed',
-    marginLeft: 120,
+    marginLeft: 70,
   },
   switchIcon: {
     width: 25,
@@ -195,13 +195,13 @@ var styles = StyleSheet.create({
   settingsButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 100,
+    marginRight: 60,
     marginTop: 10
   },
   mapButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 100,
+    marginLeft: 60,
     marginTop: 10
   }
 
