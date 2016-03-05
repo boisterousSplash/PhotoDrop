@@ -28,7 +28,8 @@ class AddGroups extends React.Component {
       foundGroupNamesData: new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
       }),
-      unrequestableGroups: this.props.route.usersGroups
+      unrequestableGroups: this.props.route.usersGroups,
+      createGroupMessage: false
     };
   }
 
@@ -43,16 +44,38 @@ class AddGroups extends React.Component {
   updateFoundGroups(event) {
     if (event.nativeEvent.text) {
       this.setState({isLoading: true});
+      var searchText = event.nativeEvent.text;
 
       api.searchGroups(event.nativeEvent.text, (groups) => {
         var groupsArr = JSON.parse(groups);
         var groupnames = _.difference(groupsArr.map((groupObj) => {
           return groupObj.groupname;
         }), this.state.unrequestableGroups);
+
+        var groupsUserIsIn = _.difference(groupsArr, groupnames);
+
+
         this.setState({
           foundGroupNamesData: this.state.foundGroupNamesData.cloneWithRows(groupnames),
           isLoading: false
         });
+        if (groupnames.length === 0 && groupsUserIsIn.length === 1 && groupsUserIsIn[0]["groupname"] === searchText) {
+          console.log('the group searched for:', searchText);
+          this.setState({
+            createGroupMessage: false,
+            alreadyInGroupMessage : true
+          });
+        } else if (groupnames.length === 0) {
+          this.setState({
+            createGroupMessage : true,
+            alreadyInGroupMessage : false
+          });
+        } else {
+          this.setState({
+            createGroupMessage : false,
+            alreadyInGroupMessage : false
+          });
+        }
       });
     } else {
       this.setState({
@@ -71,7 +94,7 @@ class AddGroups extends React.Component {
       <TouchableHighlight onPress={this.joinGroup.bind(this, group)}>
         <View style={styles.container}>
           <View style={styles.rightContainer}>
-            <Text style={styles.potentialFriend}>{group}</Text>
+            <Text style={styles.potentialGroup}>{group}</Text>
           </View>
         </View>
       </TouchableHighlight>
@@ -82,6 +105,7 @@ class AddGroups extends React.Component {
     if (event.nativeEvent.text) {
       console.log('this is the userId', this.state.userId);
       api.createGroup(this.state.userId, event.nativeEvent.text, 'the description!');
+      this._backButton();
     }
   }
 
@@ -90,7 +114,7 @@ class AddGroups extends React.Component {
       this.state.error ? <Text style={styles.err}> {this.state.error} </Text> : <View></View>
     );
     var pageTitle = (
-      <Text style={styles.pageTitle}>PhotoDrop</Text>
+      <Text style={styles.pageTitle}>Groups</Text>
     );
     var backButton = (
       <TouchableHighlight onPress={this._backButton.bind(this)} underlayColor={'white'}>
@@ -105,17 +129,19 @@ class AddGroups extends React.Component {
     return (
       <View style={{flex: 1, backgroundColor: '#ededed'}}>
         <NavigationBar title={pageTitle} tintColor={"white"} statusBar={{hidden: false}} leftButton={backButton}/>
-        <ScrollView contentContainerStyle={styles.changeContainer}>
+        <ScrollView contentContainerStyle={styles.changeContainer} rejectResponderTermination={false}>
           <Text style={styles.fieldTitle}> Find Group </Text>
           <TextInput
             autoCapitalize={'none'}
             autoCorrect={false}
             maxLength={16}
             style={styles.userInput}
-            returnKeyType={'go'}
+            returnKeyType={'join'}
             onChange={this.updateFoundGroups.bind(this)}
             onSubmitEditing={this.createGroup.bind(this)} // make this work
           />
+          <Text style={this.state.createGroupMessage ? styles.addGroupMessage : styles.noAddGroupMessage}>Press 'Join' to create group!</Text>
+          <Text style={this.state.alreadyInGroupMessage ? styles.addGroupMessage : styles.noAddGroupMessage}>You're already in this group!</Text>
           <ListView
             dataSource={this.state.foundGroupNamesData}
             renderRow={this.renderGroup.bind(this)}
@@ -202,15 +228,24 @@ var styles = StyleSheet.create({
     paddingTop: 20,
     backgroundColor: '#ededed',
   },
-  rightContainer: {
-  },
-  potentialFriend: {
+  potentialGroup: {
     height: 50,
     padding: 13,
     fontSize: 18,
     fontFamily: 'circular',
     color: '#fff',
     alignSelf: 'center'
+  },
+  addGroupMessage : {
+    margin: 20,
+    marginLeft: 80,
+    fontFamily: 'circular',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  noAddGroupMessage :{
+    opacity: 0
   }
 });
 

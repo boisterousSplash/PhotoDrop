@@ -39,15 +39,15 @@ class SelectGroups extends React.Component {
 
   _sendImage() {
     api.uploadPhoto(this.props.route.image64, this.props.route.latitude, this.props.route.longitude, this.props.route.userId, this.state.selectedGroups, (res) => {
-      console.log(res);
       this.setState({modalVisible: true});
       setTimeout(()=> {
         this._closeModal();
+        this.props.navigator.pop();
       }, 2000);
     });
   }
 
-  _closeModal() { 
+  _closeModal() {
     this.setState({modalVisible: false});
     this.props.navigator.pop();
   }
@@ -56,28 +56,29 @@ class SelectGroups extends React.Component {
     this.props.navigator.pop();
   }
 
-  // componentWillUpdate() {
-  //   this.loadGroupsData();
-  // }
-
   componentDidMount() {
     this.loadGroupsData();
   }
 
+  filterOutGroups(allGroups, selectedGroupNames) {
+    return allGroups.reduce((aggregate, group) => {
+      if (selectedGroupNames.indexOf(group.groupname) === -1) {
+        aggregate.push(group);
+      }
+      return aggregate;
+    }, []);
+  }
+
   loadGroupsData() {
     api.getUserGroups(this.props.route.userId, (data) => {
-      
       data.forEach((group, index) => {
         group.groupname = group.groupname;
       });
-      var newData = data;
-      console.log("newData",newData);
-      //if (this.state.dataSource._cachedRowCount === undefined || this.state.dataSource._cachedRowCount !== data.length) {
-        this.setState({
-          dataSource: this.state.dataSource.cloneWithRows(newData),
-          loaded: true,
-        });
-      //}
+      filteredGroupData = this.filterOutGroups(data, this.state.selectedGroups);
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(filteredGroupData),
+        loaded: true,
+      });
     });
   }
 
@@ -88,25 +89,21 @@ class SelectGroups extends React.Component {
       this.setState({
         selectedGroups: currentGroups
       });
+      this.loadGroupsData();
     }
   }
 
   renderGroup(group) {
-    console.log(this);
     return (
-      <View style={styles.container}>
-        <View style={styles.rightContainer}>
-          <Text style={styles.group}>{group.groupname}</Text>
+      <TouchableHighlight onPress={this.addGroupToList.bind(this, group.groupname)}>
+        <View style={styles.container}>
+          <View style={styles.rightContainer}>
+            <Text style={styles.potentialGroup}>{group.groupname}</Text>
+          </View>
         </View>
-        <View style={styles.rightContainer}>
-          <Text onPress={this.addGroupToList.bind(this, group.groupname)}
-          style={styles.number}>{'Share with members'}</Text>
-        </View>
-      </View>
+      </TouchableHighlight>
     );
   }
-
-
 
   render() {
     // because we are sending the captured image in as a string we have to tell react-native how it is encoded
@@ -117,7 +114,7 @@ class SelectGroups extends React.Component {
           transparent={this.state.transparent}
           visible={this.state.modalVisible}
         >
-          <View style={[styles.container]}>
+          <View style={styles.modalContainer}>
             <View style={[styles.innerContainer, this.state.innerContainerTransparentStyle]}>
               <Text style={styles.modal}>Your photo has been uploaded!</Text>
               <IconIon name="ios-checkmark-empty" size={90} color="#036C69" style={styles.yesIcon} />
@@ -125,7 +122,7 @@ class SelectGroups extends React.Component {
           </View>
         </Modal>
         <NavigationBar title={{title: 'Select Groups to Share', tintColor: '#565b5c'}} tintColor={"white"} statusBar={{hidden: true}}/>
-        
+
         <View style={{flex: 1, backgroundColor: '#ededed'}}>
           <ListView
             dataSource={this.state.dataSource}
@@ -195,7 +192,7 @@ var styles = StyleSheet.create({
     height: 60,
     marginLeft: 37
   },
-  container: {
+  modalContainer: {
     flex: 1,
     justifyContent: 'center',
     padding: 20,
@@ -211,12 +208,18 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
   },
   container: {
-    marginBottom: 5,
-    marginLeft: 5,
+    marginLeft: 30,
+    marginRight: 30,
+    marginTop: 4,
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ededed',
+    alignSelf: 'stretch',
+    backgroundColor: '#ff595b',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderRadius: 4,
+    borderColor: '#ff595b',
   },
   rightContainer: {
     flex: 1,
@@ -245,7 +248,15 @@ var styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'Circular',
     justifyContent: 'center',
-  }
+  },
+  potentialGroup: {
+    height: 50,
+    padding: 13,
+    fontSize: 18,
+    fontFamily: 'circular',
+    color: '#fff',
+    alignSelf: 'center'
+  },
 });
 
 module.exports = SelectGroups;

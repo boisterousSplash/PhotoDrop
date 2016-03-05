@@ -4,6 +4,7 @@ var Group = require('../photos/photoModel');
 var mongoose = require('mongoose');
 var User = require('../users/userModel');
 var Group = require('../groups/groupModel');
+var helpers = require('../config/helpers');
 
 module.exports = {
   // recieve base64 bit image in two POST request packets
@@ -58,7 +59,7 @@ module.exports = {
   },
 
   // fetch all photos from DB
-  fetchPhotos: function(req, res, next) {
+  fetchNearbyPhotos: function(req, res, next) {
     var maxDistance = Number(req.query.radius);
     var coords = [req.query.lon, req.query.lat];
     Photo.find({
@@ -73,7 +74,7 @@ module.exports = {
       }
     }, function(err, photos) {
       if (err) {
-        next(err);
+        return next(err);
       }
       if (photos) {
         photos = photos.sort(function(a, b) {
@@ -85,13 +86,16 @@ module.exports = {
   },
 
   // fetch friends' photos from DB
-  fetchFriendsPhotos: function(req, res, next) {
+  fetchNearbyFriendsPhotos: function(req, res, next) {
     var maxDistance = Number(req.query.radius);
     var coords = [req.query.lon, req.query.lat];
     var userId = req.query.userId;
     User.findOne({_id: mongoose.mongo.ObjectID(req.query.userId)}, {friends: 1, _id: 0}, function (err, user) {
       if (err) {
-        next(err);
+        return next(err);
+      }
+      if (!user) {
+        return helpers.badReturnedObjectResponse('user', 'ID', res);
       }
       var friendIds = user.friends.map(function(friend) {
         return friend._id;
@@ -124,7 +128,7 @@ module.exports = {
     });
   },
 
-  fetchUserPhotosNearby: function(req, res, next) {
+  fetchNearbyUserPhotos: function(req, res, next) {
     var maxDistance = Number(req.query.radius);
     var coords = [req.query.lon, req.query.lat];
     var userId = req.query.userId;
@@ -143,7 +147,7 @@ module.exports = {
       ]
     }, function(err, photos) {
       if (err) {
-        next(err);
+        return next(err);
       }
       if (photos) {
         photos = photos.sort(function(a, b) {
@@ -154,13 +158,16 @@ module.exports = {
     });
   },
 
-  fetchGroupPhotosNearby: function(req, res, next) {
+  fetchNearbyGroupPhotos: function(req, res, next) {
     var maxDistance = Number(req.query.radius);
     var coords = [req.query.lon, req.query.lat];
     var groupname = req.query.groupname;
     Group.findOne({groupname: groupname}, {photoUrls: 1, _id: 0}, function (err, group) {
       if (err) {
-        next(err);
+        return next(err);
+      }
+      if (!group) {
+        return helpers.badReturnedObjectResponse('group', 'groupname', res);
       }
       Photo.find({
         $and: [
@@ -177,9 +184,9 @@ module.exports = {
         ]
       }, function(err, photos) {
         if (err) {
-          next(err);
+          return next(err);
         }
-        if (photos) { 
+        if (photos) {
           photos = photos.sort(function(a, b) {
             return b.views - a.views;
           });
@@ -219,7 +226,7 @@ module.exports = {
       }
     }, function(err, photos) {
       if (err) {
-        next(err);
+        return next(err);
       }
       revealedPhotos = photos;
       Photo.find({
@@ -238,7 +245,7 @@ module.exports = {
         }
       }, 'loc', function(err, photos) {
         if (err) {
-          next(err);
+          return next(err);
         }
         res.json(photos);
       });
@@ -300,7 +307,7 @@ module.exports = {
         }
       }, 'loc', function(err, photos) {
         if (err) {
-          next(err);
+          return next(err);
         }
         res.json(photos);
       });
@@ -327,7 +334,10 @@ module.exports = {
 
     User.findOne({_id: mongoose.mongo.ObjectID(userId)}, {friends: 1, _id: 0}, function (err, user) {
       if (err) {
-        next(err);
+        return next(err);
+      }
+      if (!user) {
+        return helpers.badReturnedObjectResponse('user', 'ID', res);
       }
       var friendIds =  user.friends.map(function(friend) {
         return mongoose.mongo.ObjectID(friend.userId);
@@ -370,7 +380,7 @@ module.exports = {
           }
         }, 'loc', function(err, photos) {
           if (err) {
-            next(err);
+            return next(err);
           }
           res.json(photos);
         });
@@ -398,7 +408,10 @@ module.exports = {
 
     Group.findOne({groupname: groupname}, {photoUrls: 1, _id: 0}, function (err, group) {
       if (err) {
-        next(err);
+        return next(err);
+      }
+      if (!group) {
+        return helpers.badReturnedObjectResponse('group', 'groupname', res);
       }
       Photo.find({
         $and: [
@@ -437,7 +450,7 @@ module.exports = {
           }
         }, 'loc', function(err, photos) {
           if (err) {
-            next(err);
+            return next(err);
           }
           res.json(photos);
         });
@@ -448,7 +461,7 @@ module.exports = {
   fetchUserPhotos: function(req, res, next) {
     Photo.find({ userId: mongoose.mongo.ObjectID(req.query.userId) }, function(err, photos) {
       if (err) {
-        next(err);
+        return next(err);
       }
       res.json(photos);
     });
@@ -457,15 +470,15 @@ module.exports = {
   incrementViews: function(req, res, next) {
     Photo.findOne({ url: req.query.url }, function(err, photo) {
       if (err) {
-        next(err);
+        return next(err);
       }
       if (!photo) {
-        return next(new Error('Link not added yet'));
+        return helpers.badReturnedObjectResponse('photo', 'url', res);
       }
       photo.views++;
       photo.save(function(err, savedPhoto) {
         if (err) {
-          next(err);
+          return next(err);
         }
         res.json({views: savedPhoto.views});
       });
