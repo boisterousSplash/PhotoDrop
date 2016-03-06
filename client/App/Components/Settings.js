@@ -140,7 +140,7 @@ var styles = StyleSheet.create({
     alignSelf: 'center'
   },
   button: {
-    height: 45,
+    height: 40,
     flexDirection: 'row',
     backgroundColor: 'white',
     borderColor: 'white',
@@ -155,7 +155,7 @@ var styles = StyleSheet.create({
     flex: 1,
     paddingRight: 30,
     paddingLeft: 30,
-    paddingTop: 30,
+    paddingTop: 0,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
@@ -169,8 +169,8 @@ var styles = StyleSheet.create({
     alignItems: 'center',
   },
   image: {
-    width: 200,
-    height: 228,
+    width: 150,
+    height: 180,
   },
   pageTitle: {
     fontSize: 18,

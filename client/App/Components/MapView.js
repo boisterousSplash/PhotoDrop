@@ -37,7 +37,7 @@ class Map extends React.Component {
       closeLocations: undefined,
       currentGroup: ''
     };
-    
+
     api.fetchNearbyPhotos(this.props.params.latitude, this.props.params.longitude, 50, (photos) => { // need to pass in the radius (in m) from the MapView; hardcoding as 50m for now
       var photosArr = JSON.parse(photos);
       this.setState({ closeLocations: photosArr });
@@ -154,7 +154,7 @@ class Map extends React.Component {
     });
   }
 
-  
+
   // Update closeLocations and photoLocations based on specific user
   addUserFilter() {
     this.setState({filter: 'user', currentGroup: '' });
@@ -349,7 +349,7 @@ var styles = StyleSheet.create({
   bubble: {
     flex: 1,
     backgroundColor: 'white',
-    paddingHorizontal: 18,
+    paddingHorizontal: 10,
     paddingVertical: 12,
     borderRadius: 4,
     borderColor: '#000000',
@@ -360,7 +360,7 @@ var styles = StyleSheet.create({
     alignItems: 'stretch'
   },
   smallButton: {
-    width: 85,
+    width: 65,
     alignItems: 'stretch'
   },
   currentLocation: {
@@ -376,24 +376,24 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: '#FF5A5F',
-    marginLeft: 290,
-    marginBottom: 440 // originally 484
+    marginLeft: 250,
+    marginBottom: -60 // originally 484
   },
   arrowIcon:{
     width:25,
     height:25
   },
   button: {
-    width: 50,
-    paddingHorizontal: 10,
+    width: 40,
+    paddingHorizontal: 2,
     alignItems: 'center',
     marginHorizontal: 20,
     borderColor: '#FF5A5F'
   },
   topButtonContainer: {
     flexDirection: 'row',
-    bottom: 550,
-    height: 40,
+    bottom: 470,
+    height: 35,
     backgroundColor: 'transparent'
   },
   bottomButtonContainer: {
@@ -403,6 +403,7 @@ var styles = StyleSheet.create({
   },
   openPhotosText: {
     textAlign: 'center',
+    fontSize: 12,
     fontFamily: 'circular',
     color: '#565b5c'
   },
