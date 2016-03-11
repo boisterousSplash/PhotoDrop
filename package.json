@@ -1,7 +1,7 @@
 {
-  "name": "ProfoundMongoose",
-  "version": "0.0.1",
-  "description": "Hack Reactor Greenfield Project",
+  "name": "PhotoDrop",
+  "version": "2.0.0",
+  "description": "Social, location based photo application",
   "main": "server.js",
   "scripts": {
     "start": "nodemon server/server.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ProfoundMongoose/ProfoundMongoose.git"
+    "url": "https://github.com/boisterousSplash/PhotoDrop.git"
   },
-  "author": "",
+  "authors": ["Kyle Corbelli", "Erick Paepke", "Shane McGraw", "Elliot Plant"],
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ProfoundMongoose/ProfoundMongoose/issues"
+    "url": "https://github.com/boisterousSplash/PhotoDrop/issues"
   },
-  "homepage": "https://github.com/ProfoundMongoose/ProfoundMongoose",
+  "homepage": "https://github.com/boisterousSplash/PhotoDrop",
   "dependencies": {
     "bcrypt": "^0.8.5",
     "bcrypt-nodejs": "0.0.3",
