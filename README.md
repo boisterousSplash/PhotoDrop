@@ -1,7 +1,7 @@
 # PhotoDrop
 ![super agent](http://i.imgur.com/kM0EQFm.png?1)
 
-PhotoDrop is a location-based photo sharing iPhone app. It allows iOS users to find and share photos based on their current geolocation. PhotoDrop offers two main functions: PhotoShare and PhotoExplore. With PhotoShare, users can take photos with the app and store them at their current location for other users to see. With PhotoExplore, users can open the app and see the photos that other users have stored at their current location.
+PhotoDrop is a location-based photo sharing iPhone app. It allows iOS users to find and share photos based on their current geolocation. PhotoDrop offers two main functions: PhotoShare and PhotoExplore. With PhotoShare, users can take photos with the app and store them at their current location for other users to see. With PhotoExplore, users can open the app and see the photos that other users have stored at their current location. Users can personalize their experience and filter nearby photos by joining groups and adding friends. 
 
 ![Alt Text](/PhotoDropLiveDemo.gif?raw=true)
 
@@ -46,6 +46,9 @@ __Step 4: Add RCTCustom.m in the Xcode project__
 In your Xcode project, add the 'RCTCustom.m' file in the 'Base' folder in the 'PhotoDrop' project (PhotoDrop > Libraries > React.xcodeproj > React > Base). You can do this by control clicking on the 'Base' folder and selecting 'Add File to "React.xcodeproj"...'. You'll find the 'RCTCustom.m' file inside the repo (client > App > Components > Assets).
 
 ![super agent](http://i.imgur.com/AKDxeVV.png)
+
+### Troubleshooting
+You may need to rename your project, as all Xcode projects need to be globally unique
 
 ## Run Simulator
 
